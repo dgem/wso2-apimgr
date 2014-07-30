@@ -12,6 +12,7 @@ function Store(proxy){
 /**
  * Login a user
  * (User remains logged in and all subsequet actions are performed by this user until logout is called)
+ * See https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-Login
  *
  * @param {username: 'xxx', password: 'yyy'} data
  * @param {function (err, resp)} callback to be invoked
@@ -30,6 +31,7 @@ Store.prototype.login = function(data, callback){
 			if (cookie.length >0){
 				cookie = cookie[0];
 				_this.proxy.cookie = cookie;
+				if (_this.proxy.config.debug) console.log('Cookie ', cookie);
 			}
 		}
 		callback (err,resp);
@@ -38,6 +40,8 @@ Store.prototype.login = function(data, callback){
 
 /**
  * Logout a user
+ * See https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-Logout
+ * 
  * @param {function (err, resp)} callback to be invoked
  */
 Store.prototype.logout = function(callback){
@@ -57,6 +61,7 @@ Store.prototype.logout = function(callback){
 
 /**
  * Registers a new user
+ * See https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-UserSignup
  *
  * @param {username: 'user1', password: 'xxx', firstname: 'George', lastname: 'Doors', email: 'george@doors.org'} data
  * @param {function (err, resp)} callback to be invoked
@@ -75,6 +80,7 @@ Store.prototype.signup = function(data, callback){
 
 /**
  * List APIs
+ * See https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-GetallPaginatedPublishedAPIs
  *
  * @param {start: 0, end: 100} data where start and end control pagination (defaults to 0->10)
  * @param {function (error, respose)} callback to be invoked
@@ -102,14 +108,65 @@ Store.prototype.apis = function(data, callback) {
 
 /**
  * Subscribe to an API
+ * See https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-AddaSubscription
  *
- * @param {
+ * @param { name: 'ApiName', version: '0.0.1' , provider: 'Zzish', tier:'Unlimmied', applicationId: 1 } data
+ *
+ * action=addSubscription&
  */
-
+Store.prototype.subscribe = function(data, callback){
+	var request = {
+		url: this.proxy.buildUrl(config.store.base, config.store.subscribe),
+		data: {
+			action: 'addSubscription',
+			name: data.name,
+			version: data.version, 
+			provider: data.provider,
+			tier: data.tier || 'Unlimited', 
+			applicationId: data.applicationId
+		}
+	};
+	this.proxy.ajax(request, function(err, resp){
+			if (err === null && resp.error === false) {
+			callback(err, resp.status);
+		} else {
+			callback(err, resp);
+		}
+	});
+};
 
 
 /**
  * Gets a list of the user's applications
+ * https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-GetApplications
+ *
+ * @param {application: 'MyApplication', tier : 'Unlimited', description: 'MyApp does stuff', callbackUrl: 'https://kanzi.co.uk/callback'} data to be passed to API Manager
+ * @param {function (err, resp)} callback to be invoked
+ * The resp (assuming err is null) will contain an array of applications, for example:
+ */
+Store.prototype.application = function(data, callback) {
+	var request = {
+		url: this.proxy.buildUrl(config.store.base, config.store.application),
+		data: {
+			action: 'addApplication',
+			application: data.application,
+			description: data.description || 'Default description',
+			tier: data.tier || 'Unlimited',
+			callbackUrl: data.callbackUrl || ''
+		}
+	};
+	this.proxy.ajax(request, function(err, resp){
+		if (err === null && resp.error === false) {
+			callback(err, resp.status);
+		} else {
+			callback(err, resp);
+		}
+	});
+};
+
+/**
+ * Gets a list of the user's applications
+ * https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-GetApplications
  *
  * @param {function (err, resp)} callback to be invoked
  * The resp (assuming err is null) will contain an array of applications, for example:
@@ -123,6 +180,36 @@ Store.prototype.applications = function(callback) {
 	this.proxy.ajax(request, function(err, resp){
 		if (err === null && resp.error === false) {
 			callback(err, resp.applications);
+		} else {
+			callback(err, resp);
+		}
+	});
+};
+
+
+/**s
+ * Generate token
+ * https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-GetApplications
+ *
+ * @param {application: 'MyApplication', keytype: 'PRODUCTION', callbackUrl: 'http://kanzi.co.uk/callback', authorizedDomains: 'ALL', validityTime: 3600} data to be passed
+ * @param {function (err, resp)} callback to be invoked
+ * The resp (assuming err is null) will contain an array of applications, for example:
+ */
+Store.prototype.generateToken = function(data, callback) {
+	var request = {
+		url: this.proxy.buildUrl(config.store.base, config.store.subscribe),
+		data: {
+			action: 'generateApplicationKey',
+			application: data.application,
+			keytype: data.keytype || 'PRODUCTION',
+			callbackUrl: data.callbackUrl || '',
+			authorizedDomains: data.authorizedDomains || '',
+			validityTime: data.validityTime || 3600
+		}
+	};
+	this.proxy.ajax(request, function(err, resp){
+		if (err === null && resp.error === false) {
+			callback(err, resp.data.key);
 		} else {
 			callback(err, resp);
 		}

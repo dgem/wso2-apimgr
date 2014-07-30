@@ -37,7 +37,7 @@ Proxy.prototype.ajax = function(request, callback) {
 		req.setDisableHeaderCheck(true);
 		req.setRequestHeader('Cookie', this.cookie);
 	}
-	if (debug) console.log('Proxy.ajax send', request.method, request.url, data);
+	if (debug) console.log('Proxy.ajax send', request.method, request.url, data, this.cookie);
 	if (request.method === 'GET') {
 		req.send();
 	} else {
