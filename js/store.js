@@ -111,8 +111,7 @@ Store.prototype.apis = function(data, callback) {
  * See https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-AddaSubscription
  *
  * @param { name: 'ApiName', version: '0.0.1' , provider: 'Zzish', tier:'Unlimmied', applicationId: 1 } data
- *
- * action=addSubscription&
+ * @param {function (err, resp)} callback to be invoked
  */
 Store.prototype.subscribe = function(data, callback){
 	var request = {
@@ -137,7 +136,7 @@ Store.prototype.subscribe = function(data, callback){
 
 
 /**
- * Gets a list of the user's applications
+ * Add an new application
  * https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-GetApplications
  *
  * @param {application: 'MyApplication', tier : 'Unlimited', description: 'MyApp does stuff', callbackUrl: 'https://kanzi.co.uk/callback'} data to be passed to API Manager
@@ -187,9 +186,9 @@ Store.prototype.applications = function(callback) {
 };
 
 
-/**s
+/**
  * Generate token
- * https://docs.wso2.com/display/AM170/Store+APIs#StoreAPIs-GetApplications
+ * (undocumented API)
  *
  * @param {application: 'MyApplication', keytype: 'PRODUCTION', callbackUrl: 'http://kanzi.co.uk/callback', authorizedDomains: 'ALL', validityTime: 3600} data to be passed
  * @param {function (err, resp)} callback to be invoked
