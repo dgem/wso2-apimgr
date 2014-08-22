@@ -3,7 +3,7 @@
 var config = {};
 config.debug = true;
 //config.baseUrl = 'https://localhost:9443';
-config.baseUrl = 'http://localhost:9763';
+config.baseUrl = 'http://apigw.zzish.com:9763';
 config.store = {
 	base : 'store/site/blocks',
 	login : 'user/login/ajax/login.jag',
