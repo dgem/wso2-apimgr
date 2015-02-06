@@ -215,4 +215,33 @@ Store.prototype.generateToken = function(data, callback) {
 	});
 };
 
+/**
+ * refreshToken token
+ * (undocumented API)
+ *
+ * @param {application: 'MyApplication', keytype: 'PRODUCTION', callbackUrl: 'http://kanzi.co.uk/callback', authorizedDomains: 'ALL', validityTime: 3600} data to be passed
+ * @param {function (err, resp)} callback to be invoked
+ * The resp (assuming err is null) will contain an array of applications, for example:
+ */
+Store.prototype.refreshToken = function(data, callback) {
+	var request = {
+		url: this.proxy.buildUrl(config.store.base, config.store.subscribe),
+		data: {
+			action: 'refreshToken',
+			application: data.application,
+			keytype: data.keytype || 'PRODUCTION',
+			callbackUrl: data.callbackUrl || '',
+			authorizedDomains: data.authorizedDomains || '',
+			validityTime: data.validityTime || 3600
+		}
+	};
+	this.proxy.ajax(request, function(err, resp){
+		if (err === null && resp.error === false) {
+			callback(err, resp.data.key);
+		} else {
+			callback(err, resp);
+		}
+	});
+};
+
 
