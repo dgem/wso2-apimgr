@@ -1,6 +1,6 @@
 {
   "name": "wso2-apimgr",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A lightweight JS SDK to work with the WSO2 API Manager",
   "main": "js/index.js",
   "scripts": {

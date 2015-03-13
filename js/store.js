@@ -174,7 +174,8 @@ Store.prototype.application = function(data, callback) {
 Store.prototype.applications = function(callback) {
 	var request = {
 		url: this.proxy.buildUrl(config.store.base, config.store.listApps),
-		data: {action: 'getApplications'}
+		data: {action: 'getApplications'},
+		method : 'GET'
 	};
 	this.proxy.ajax(request, function(err, resp){
 		if (err === null && resp.error === false) {
