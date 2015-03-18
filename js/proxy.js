@@ -15,7 +15,7 @@ function Proxy(config) {
 }
 
 Proxy.prototype.ajax = function(request, callback) {
-	var debug = this.config.debug, req, data;
+	var debug = this.config.debug, req, data, cookies;
 	if (debug) console.log('Proxy.ajax', JSON.stringify(request));
 	if (typeof request.method === 'undefined') {
 		request.method = this.config.ajax.method;
@@ -32,12 +32,18 @@ Proxy.prototype.ajax = function(request, callback) {
 		request.url = request.url + '?' + data;
 	}
 	req.open(request.method, request.url, true);
-	if (this.cookie) {
-		req.withCredentials = true;
+	req.withCredentials = true;
+	if (this.cookie && this.cookie.length>0) {
 		req.setDisableHeaderCheck(true);
 		req.setRequestHeader('Cookie', this.cookie);
+    for (i=0,m=this.cookie.length;i<m;i++){
+      console.log("adding", this.cookie[i]);
+      if (i>0) cookies += "; ";
+      cookies += this.cookie[i];
+    }
+    req.setRequestHeader('Cookie', cookies);
 	}
-	if (debug) console.log('Proxy.ajax send', request.method, request.url, data, this.cookie);
+	if (debug) console.log('Proxy.ajax send', request.method, request.url, data, cookies);
 	if (request.method === 'GET') {
 		req.send();
 	} else {

@@ -3,7 +3,7 @@ module.exports=Store;
 
 var config = require('./config');
 
-var cookieRegex =  /(JSESSIONID=\w*)/;
+var cookieRegex =  /^(\w*=\w*)/;
 
 function Store(proxy){
 	this.proxy = proxy;
@@ -25,15 +25,16 @@ Store.prototype.login = function(data, callback){
 		data: data
 	};
 	this.proxy.ajax(request, function(err, resp, raw) {
-		var cookie = raw.getResponseHeader('Set-Cookie');
-		if (err === null && cookie !== null){
-			cookie = cookieRegex.exec(cookie);
-			if (cookie.length >0){
-				cookie = cookie[0];
-				_this.proxy.cookie = cookie;
-				if (_this.proxy.config.debug) console.log('Cookie ', cookie);
-			}
-		}
+		var cookies = raw.getResponseHeader('Set-Cookie');
+		var headers=[];
+    for (i=0, m=cookies.length; i<m; i++) {
+      var cookie = cookieRegex.exec(cookies[i]);
+      if (cookie && cookie.length >0){
+        headers.push(cookie[0]);
+      }
+    }
+    if (_this.proxy.config.debug) console.log('Cookie Headers', headers);
+    _this.proxy.cookie=headers;
 		callback (err,resp);
 	});
 };
@@ -53,7 +54,7 @@ Store.prototype.logout = function(callback){
 	};
 	this.proxy.ajax(request, function(err, resp) {
 		if (err === null) {
-			_this.proxy.cookie = null;
+			_this.proxy.cookie = [];
 		}
 		callback(err, resp);
 	});
