@@ -15,7 +15,7 @@ function Proxy(config) {
 }
 
 Proxy.prototype.ajax = function(request, callback) {
-	var debug = this.config.debug, req, data, cookies;
+	var debug = this.config.debug, req, data, cookies="";
 	if (debug) console.log('Proxy.ajax', JSON.stringify(request));
 	if (typeof request.method === 'undefined') {
 		request.method = this.config.ajax.method;
@@ -37,7 +37,6 @@ Proxy.prototype.ajax = function(request, callback) {
 		req.setDisableHeaderCheck(true);
 		req.setRequestHeader('Cookie', this.cookie);
     for (i=0,m=this.cookie.length;i<m;i++){
-      console.log("adding", this.cookie[i]);
       if (i>0) cookies += "; ";
       cookies += this.cookie[i];
     }
